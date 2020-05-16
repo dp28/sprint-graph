@@ -50,7 +50,20 @@ async function drawGraph() {
     edges: new DataSet(issueGraph.edges),
   };
 
-  new Network(root, data, {});
+  const options = {
+    nodes: {
+      shape: "box",
+      widthConstraint: 100,
+    },
+    layout: {
+      hierarchical: {
+        enabled: true,
+        treeSpacing: 200,
+      },
+    },
+  };
+
+  new Network(root, data, options);
   console.debug("Drew graph");
 }
 

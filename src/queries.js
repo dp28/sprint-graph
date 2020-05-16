@@ -3,8 +3,10 @@ export async function getIssues() {
   console.debug({ projectKey });
 
   const issueKeys = findIssueKeysInPage(projectKey);
+  console.log({ issueKeys });
   const query = combineQueryParts(issueKeys.map(buildIssueQuery));
   const { data } = await performQuery(query);
+  console.log(data);
   const issues = Object.values(data);
   return mapIssuesToNetworkData(issues);
 }
@@ -55,7 +57,7 @@ function combineQueryParts(parts) {
 
 function findIssueKeysInPage(projectKey) {
   const regex = new RegExp(`${projectKey}-\\d+`, "g");
-  return [...new Set(document.body.innerText.match(regex))];
+  return [...new Set(document.body.innerHTML.match(regex))];
 }
 
 function mapIssuesToNetworkData(issues) {
@@ -68,16 +70,22 @@ function toNode({ id, key, fields }) {
   const summary = findField("summary", fields).content;
   const status = findField("status", fields).content.name;
   return {
-    id,
-    label: `[${key}] ${summary} (${status})`,
+    id: key,
+    label: key,
+    title: `[${status}] ${summary}`,
   };
 }
 
 function findEdges(issues) {
   return issues
-    .flatMap((issue) => findField("issuelinks", issue.fields).content)
-    .filter((_) => _.outwardIssue)
-    .map((issue) => ({ from: issue.id, to: issue.outwardIssue.id }));
+    .flatMap((issue) =>
+      findField("issuelinks", issue.fields).content.map((link) => ({
+        key: issue.key,
+        link,
+      }))
+    )
+    .filter((_) => _.link.outwardIssue)
+    .map((issue) => ({ from: issue.key, to: issue.link.outwardIssue.key }));
 }
 
 function findField(name, fields) {
