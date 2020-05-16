@@ -1,0 +1,20 @@
+{
+  "name": "sprint-graph",
+  "version": "0.1.0",
+  "description": "A chrome extension to visualize Jira sprints",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "jira",
+    "sprint",
+    "graph",
+    "visualization"
+  ],
+  "author": "Daniel Patterson",
+  "license": "MIT",
+  "dependencies": {
+    "jest": "^26.0.1"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Sprint Graph",
+  "version": "0.1.0",
+  "manifest_version": 2,
+  "description": "Visualize Jira Sprints as graphs",
+  "background": {
+    "scripts": ["src/loadBackgroundScript.js", "lib/development/hotReload.js"]
+  },
+  "permissions": ["tabs", "activeTab"],
+  "browser_action": {
+    "default_title": "Sprint Graph"
+  },
+  "web_accessible_resources": ["src/*"]
+}
