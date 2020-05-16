@@ -1,9 +1,14 @@
 import { DataSet, Network } from "vis-network/standalone";
 
+const RootId = "__sprintGraphRoot";
+
 function main() {
-  console.debug("Loaded!");
+  if (window.__sprintGraphAlreadyLoaded) {
+    return;
+  }
   registerListeners();
-  drawGraph();
+  window.__sprintGraphAlreadyLoaded = true;
+  console.debug("Loaded!");
 }
 
 function registerListeners() {
@@ -11,12 +16,22 @@ function registerListeners() {
     console.debug("Message received by content script:", action);
     switch (action.type) {
       case "TOGGLE_POPUP":
-        console.log("Open graph");
+        console.debug("Toggle graph");
+        toggleGraph();
         return;
       default:
         return;
     }
   });
+}
+
+function toggleGraph() {
+  const root = document.getElementById(RootId);
+  if (root) {
+    document.body.removeChild(root);
+  } else {
+    drawGraph();
+  }
 }
 
 function drawGraph() {
@@ -44,6 +59,7 @@ function drawGraph() {
   };
 
   new Network(root, data, {});
+  console.debug("Drew graph");
 }
 
 main();
