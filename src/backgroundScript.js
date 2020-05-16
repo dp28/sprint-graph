@@ -1,15 +1,10 @@
-export function main() {
-  console.debug("Loaded!");
-  registerListeners();
-}
-
 function registerListeners() {
   chrome.browserAction.onClicked.addListener((tab) => {
     console.debug("Clicked - tab:", tab.id);
     chrome.tabs.executeScript(
       tab.id,
       {
-        file: "src/loadContentScript.js",
+        file: "contentScript.bundle.js",
         runAt: "document_end",
         allFrames: false,
       },
@@ -20,3 +15,6 @@ function registerListeners() {
     );
   });
 }
+
+console.debug("Loaded!");
+registerListeners();
