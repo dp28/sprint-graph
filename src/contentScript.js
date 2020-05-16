@@ -1,4 +1,5 @@
 import { DataSet, Network } from "vis-network/standalone";
+import { getIssues } from "./queries";
 
 const RootId = "__sprintGraphRoot";
 
@@ -34,7 +35,10 @@ function toggleGraph() {
   }
 }
 
-function drawGraph() {
+async function drawGraph() {
+  const issueGraph = await getIssues();
+  console.debug(issueGraph);
+
   const root = document.createElement("div");
   root.style =
     "width: calc(100% - 20px); height: calc(100% - 20px); border: 1px solid lightgray; position: absolute; top: 10px; left: 10px; background: white; z-index: 10000";
@@ -42,20 +46,8 @@ function drawGraph() {
   document.body.appendChild(root);
 
   const data = {
-    nodes: new DataSet([
-      { id: 1, label: "Node 1" },
-      { id: 2, label: "Node 2" },
-      { id: 3, label: "Node 3" },
-      { id: 4, label: "Node 4" },
-      { id: 5, label: "Node 5" },
-    ]),
-    edges: new DataSet([
-      { from: 1, to: 3 },
-      { from: 1, to: 2 },
-      { from: 2, to: 4 },
-      { from: 2, to: 5 },
-      { from: 3, to: 3 },
-    ]),
+    nodes: new DataSet(issueGraph.nodes),
+    edges: new DataSet(issueGraph.edges),
   };
 
   new Network(root, data, {});
