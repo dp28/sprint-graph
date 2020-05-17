@@ -68,11 +68,11 @@ function mapIssuesToNetworkData(issues) {
 
 function toIssue({ id, key, fields }) {
   const summary = findField("summary", fields).content;
-  const status = findField("status", fields).content.name;
+  const status = findField("status", fields).content;
   return {
     id,
     key,
-    status,
+    status: { name: status.name, category: status.statusCategory.key },
     summary,
   };
 }
