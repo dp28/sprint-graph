@@ -1,4 +1,5 @@
-import { DataSet, Network } from "vis-network/standalone";
+import { drawVisGraph } from "./visGraph";
+import { drawD3Graph } from "./d3Graph";
 import { getIssues } from "./queries";
 
 const RootId = "__sprintGraphRoot";
@@ -42,28 +43,12 @@ async function drawGraph() {
   const root = document.createElement("div");
   root.style =
     "width: calc(100% - 20px); height: calc(100% - 20px); border: 1px solid lightgray; position: absolute; top: 10px; left: 10px; background: white; z-index: 10000";
-  root.id = "__sprintGraphRoot";
+  root.id = RootId;
   document.body.appendChild(root);
 
-  const data = {
-    nodes: new DataSet(issueGraph.nodes),
-    edges: new DataSet(issueGraph.edges),
-  };
+  // drawVisGraph(issueGraph, root);
+  drawD3Graph(issueGraph, RootId);
 
-  const options = {
-    nodes: {
-      shape: "box",
-      widthConstraint: 100,
-    },
-    layout: {
-      hierarchical: {
-        enabled: true,
-        treeSpacing: 200,
-      },
-    },
-  };
-
-  new Network(root, data, options);
   console.debug("Drew graph");
 }
 

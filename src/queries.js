@@ -61,18 +61,19 @@ function findIssueKeysInPage(projectKey) {
 }
 
 function mapIssuesToNetworkData(issues) {
-  const nodes = issues.map(toNode);
+  const nodes = issues.map(toIssue);
   const edges = findEdges(issues);
   return { nodes, edges };
 }
 
-function toNode({ id, key, fields }) {
+function toIssue({ id, key, fields }) {
   const summary = findField("summary", fields).content;
   const status = findField("status", fields).content.name;
   return {
-    id: key,
-    label: key,
-    title: `[${status}] ${summary}`,
+    id,
+    key,
+    status,
+    summary,
   };
 }
 
@@ -85,7 +86,11 @@ function findEdges(issues) {
       }))
     )
     .filter((_) => _.link.outwardIssue)
-    .map((issue) => ({ from: issue.key, to: issue.link.outwardIssue.key }));
+    .map((issue) => ({
+      from: issue.key,
+      to: issue.link.outwardIssue.key,
+      type: issue.link.type.outward,
+    }));
 }
 
 function findField(name, fields) {
