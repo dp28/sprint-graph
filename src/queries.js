@@ -1,4 +1,4 @@
-export async function getIssues({ includeDoneIssues }) {
+export async function getIssues({ includeDoneIssues, includeSubtasks }) {
   const projectKey = getProjectKey();
   console.debug({ projectKey });
 
@@ -8,7 +8,7 @@ export async function getIssues({ includeDoneIssues }) {
   const { data } = await performQuery(query);
   console.debug(data);
   const issues = Object.values(data);
-  return mapIssuesToNetworkData({ issues, includeDoneIssues });
+  return mapIssuesToNetworkData({ issues, includeDoneIssues, includeSubtasks });
 }
 
 function getProjectKey() {
@@ -60,19 +60,43 @@ function findIssueKeysInPage(projectKey) {
   return [...new Set(document.body.innerHTML.match(regex))];
 }
 
-function mapIssuesToNetworkData({ issues, includeDoneIssues }) {
+function mapIssuesToNetworkData({
+  issues,
+  includeDoneIssues,
+  includeSubtasks,
+}) {
   const nodes = issues.map(toIssue);
   const edges = findEdges(issues);
+  const graph = { nodes, edges };
+
+  return filterSubtasks(
+    filterDoneIssues(graph, includeDoneIssues),
+    includeSubtasks
+  );
+}
+
+function filterDoneIssues(graph, includeDoneIssues) {
   if (includeDoneIssues) {
-    return { nodes, edges };
-  } else {
-    const unfinishedIssues = nodes.filter((_) => !isDone(_));
-    const unfinishedIssueKeys = new Set(unfinishedIssues.map((_) => _.key));
-    const unfinishedIssueEdges = edges.filter((edge) =>
-      unfinishedIssueKeys.has(edge.from)
-    );
-    return { nodes: unfinishedIssues, edges: unfinishedIssueEdges };
+    return graph;
   }
+  const unfinishedIssues = graph.nodes.filter((_) => !isDone(_));
+  const unfinishedIssueKeys = new Set(unfinishedIssues.map((_) => _.key));
+  const unfinishedIssueEdges = graph.edges.filter((edge) =>
+    unfinishedIssueKeys.has(edge.from)
+  );
+  return { nodes: unfinishedIssues, edges: unfinishedIssueEdges };
+}
+
+function filterSubtasks(graph, includeSubtasks) {
+  if (includeSubtasks) {
+    return graph;
+  }
+  const parentIssues = graph.nodes.filter((_) => !_.subtask);
+  const parentIssueKeys = new Set(parentIssues.map((_) => _.key));
+  const parentIssueEdges = graph.edges.filter((edge) =>
+    parentIssueKeys.has(edge.to)
+  );
+  return { nodes: parentIssues, edges: parentIssueEdges };
 }
 
 function toIssue({ key, fields }) {
@@ -82,6 +106,7 @@ function toIssue({ key, fields }) {
     key,
     status: { name: status.name, category: status.statusCategory.key },
     summary,
+    subtask: findField("issuetype", fields).content.subtask,
   };
 }
 

@@ -39,9 +39,12 @@ async function toggleGraph() {
   }
 }
 
-async function drawGraph(root, { includeDoneIssues = true } = {}) {
+async function drawGraph(
+  root,
+  { includeDoneIssues = true, includeSubtasks = true } = {}
+) {
   showMessage("Loading data ...", root);
-  const issueGraph = await getIssues({ includeDoneIssues });
+  const issueGraph = await getIssues({ includeDoneIssues, includeSubtasks });
   console.debug(issueGraph);
 
   showMessage("Building graph ...", root);
@@ -55,24 +58,47 @@ async function drawGraph(root, { includeDoneIssues = true } = {}) {
 }
 
 function drawButtons(root) {
-  let includeDoneIssues = true;
+  const state = { includeDoneIssues: true, includeSubtasks: true };
+  drawDoneIssuesToggle(root, state);
+  drawSubtasksToggle(root, state);
+}
+
+function drawDoneIssuesToggle(root, state) {
   const toggleShowDoneIssues = document.createElement("button");
   toggleShowDoneIssues.innerText = "Hide 'Done' issues";
 
   toggleShowDoneIssues.addEventListener("click", async () => {
-    includeDoneIssues = !includeDoneIssues;
-    console.debug({ includeDoneIssues });
+    state.includeDoneIssues = !state.includeDoneIssues;
 
     toggleShowDoneIssues.disabled = "disabled";
-    await drawGraph(root, { includeDoneIssues });
+    await drawGraph(root, state);
 
-    toggleShowDoneIssues.innerText = includeDoneIssues
+    toggleShowDoneIssues.innerText = state.includeDoneIssues
       ? "Hide 'Done' issues"
       : "Show 'Done' issues";
     toggleShowDoneIssues.disabled = null;
   });
 
   root.prepend(toggleShowDoneIssues);
+}
+
+function drawSubtasksToggle(root, state) {
+  const toggleShowSubtasks = document.createElement("button");
+  toggleShowSubtasks.innerText = "Hide subtasks";
+
+  toggleShowSubtasks.addEventListener("click", async () => {
+    state.includeSubtasks = !state.includeSubtasks;
+
+    toggleShowSubtasks.disabled = "disabled";
+    await drawGraph(root, state);
+
+    toggleShowSubtasks.innerText = state.includeSubtasks
+      ? "Hide subtasks"
+      : "Show subtasks";
+    toggleShowSubtasks.disabled = null;
+  });
+
+  root.prepend(toggleShowSubtasks);
 }
 
 function createOrReplaceDiagramRoot(root) {
