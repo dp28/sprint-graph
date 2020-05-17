@@ -58,13 +58,21 @@ function calculateLevels({ nodes, edges }) {
   );
 }
 
-function calculateLongestDistanceToRoot(nodeKey, incomingEdges) {
+function calculateLongestDistanceToRoot(nodeKey, incomingEdges, path = []) {
   if (!incomingEdges[nodeKey]) {
     return 0;
   }
+  const nextEdgesWithoutCycles = incomingEdges[nodeKey].filter(
+    (key) => !path.includes(key)
+  );
+
+  console.log({ nodeKey, nextEdgesWithoutCycles });
+
   return Math.max(
-    ...incomingEdges[nodeKey].map(
-      (from) => 1 + calculateLongestDistanceToRoot(from, incomingEdges)
+    ...nextEdgesWithoutCycles.map(
+      (from) =>
+        1 +
+        calculateLongestDistanceToRoot(from, incomingEdges, [...path, nodeKey])
     )
   );
 }
