@@ -46,8 +46,8 @@ async function drawGraph() {
   root.id = RootId;
   document.body.appendChild(root);
 
-  // drawVisGraph(issueGraph, root);
-  drawD3Graph(issueGraph, RootId);
+  drawVisGraph(issueGraph, root);
+  // drawD3Graph(issueGraph, RootId);
 
   console.debug("Drew graph");
 }
