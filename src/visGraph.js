@@ -1,6 +1,6 @@
 import { DataSet, Network } from "vis-network/standalone";
 
-export function drawVisGraph(issueGraph, root) {
+export function buildGraph(issueGraph) {
   const levels = calculateLevels(issueGraph);
   const nodeMap = Object.fromEntries(
     issueGraph.nodes.map((node) => [node.key, node])
@@ -40,7 +40,7 @@ export function drawVisGraph(issueGraph, root) {
     },
   };
 
-  new Network(root, data, options);
+  return { draw: (root) => new Network(root, data, options) };
 }
 
 function calculateLevels({ nodes, edges }) {
@@ -65,8 +65,6 @@ function calculateLongestDistanceToRoot(nodeKey, incomingEdges, path = []) {
   const nextEdgesWithoutCycles = incomingEdges[nodeKey].filter(
     (key) => !path.includes(key)
   );
-
-  console.log({ nodeKey, nextEdgesWithoutCycles });
 
   return Math.max(
     ...nextEdgesWithoutCycles.map(

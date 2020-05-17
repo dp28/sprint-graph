@@ -3,10 +3,10 @@ export async function getIssues() {
   console.debug({ projectKey });
 
   const issueKeys = findIssueKeysInPage(projectKey);
-  console.log({ issueKeys });
+  console.debug({ issueKeys });
   const query = combineQueryParts(issueKeys.map(buildIssueQuery));
   const { data } = await performQuery(query);
-  console.log(data);
+  console.debug(data);
   const issues = Object.values(data);
   return mapIssuesToNetworkData(issues);
 }
