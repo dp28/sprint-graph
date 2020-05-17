@@ -20,8 +20,9 @@ export function drawVisGraph(issueGraph, root) {
         from,
         to,
         label: getEdgeLabel(type, nodeMap[from]),
-        arrows: "to",
+        arrows: type === "child" ? "from" : "to",
         color: getEdgeColour(type, nodeMap[from]),
+        dashes: type !== "child",
       }))
     ),
   };
@@ -94,6 +95,8 @@ function getEdgeLabel(edgeType, fromNode) {
 function getEdgeColour(edgeType, fromNode) {
   if (edgeType === "blocks" && fromNode.status.category !== "done") {
     return "red";
+  } else if (edgeType === "child") {
+    return "rgb(0, 82, 204)";
   }
   return "grey";
 }

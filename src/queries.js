@@ -78,6 +78,10 @@ function toIssue({ id, key, fields }) {
 }
 
 function findEdges(issues) {
+  return findBlockedEdges(issues).concat(findSubtaskEdges(issues));
+}
+
+function findBlockedEdges(issues) {
   return issues
     .flatMap((issue) =>
       findField("issuelinks", issue.fields).content.map((link) => ({
@@ -91,6 +95,16 @@ function findEdges(issues) {
       to: issue.link.outwardIssue.key,
       type: issue.link.type.outward,
     }));
+}
+
+function findSubtaskEdges(issues) {
+  return issues.flatMap((issue) =>
+    findField("subtasks", issue.fields).content.map((subtask) => ({
+      from: issue.key,
+      to: subtask.key,
+      type: "child",
+    }))
+  );
 }
 
 function findField(name, fields) {
