@@ -5,6 +5,11 @@ const RootId = "__sprintGraphRoot";
 const DiagramRootId = "__sprintDiagramRoot";
 const MessageElementId = "sprintMessage";
 
+const State = {
+  includeDoneIssues: false,
+  includeSubtasks: false,
+};
+
 function main() {
   if (window.__sprintGraphAlreadyLoaded) {
     return;
@@ -39,12 +44,9 @@ async function toggleGraph() {
   }
 }
 
-async function drawGraph(
-  root,
-  { includeDoneIssues = true, includeSubtasks = true } = {}
-) {
+async function drawGraph(root) {
   showMessage("Loading data ...", root);
-  const issueGraph = await getIssues({ includeDoneIssues, includeSubtasks });
+  const issueGraph = await getIssues(State);
   console.debug(issueGraph);
 
   showMessage("Building graph ...", root);
@@ -58,22 +60,23 @@ async function drawGraph(
 }
 
 function drawButtons(root) {
-  const state = { includeDoneIssues: true, includeSubtasks: true };
-  drawDoneIssuesToggle(root, state);
-  drawSubtasksToggle(root, state);
+  drawDoneIssuesToggle(root);
+  drawSubtasksToggle(root);
 }
 
-function drawDoneIssuesToggle(root, state) {
+function drawDoneIssuesToggle(root) {
   const toggleShowDoneIssues = document.createElement("button");
-  toggleShowDoneIssues.innerText = "Hide 'Done' issues";
+  toggleShowDoneIssues.innerText = State.includeDoneIssues
+    ? "Hide 'Done' issues"
+    : "Show 'Done' issues";
 
   toggleShowDoneIssues.addEventListener("click", async () => {
-    state.includeDoneIssues = !state.includeDoneIssues;
+    State.includeDoneIssues = !State.includeDoneIssues;
 
     toggleShowDoneIssues.disabled = "disabled";
-    await drawGraph(root, state);
+    await drawGraph(root);
 
-    toggleShowDoneIssues.innerText = state.includeDoneIssues
+    toggleShowDoneIssues.innerText = State.includeDoneIssues
       ? "Hide 'Done' issues"
       : "Show 'Done' issues";
     toggleShowDoneIssues.disabled = null;
@@ -82,17 +85,19 @@ function drawDoneIssuesToggle(root, state) {
   root.prepend(toggleShowDoneIssues);
 }
 
-function drawSubtasksToggle(root, state) {
+function drawSubtasksToggle(root) {
   const toggleShowSubtasks = document.createElement("button");
-  toggleShowSubtasks.innerText = "Hide subtasks";
+  toggleShowSubtasks.innerText = State.includeSubtasks
+    ? "Hide subtasks"
+    : "Show subtasks";
 
   toggleShowSubtasks.addEventListener("click", async () => {
-    state.includeSubtasks = !state.includeSubtasks;
+    State.includeSubtasks = !State.includeSubtasks;
 
     toggleShowSubtasks.disabled = "disabled";
-    await drawGraph(root, state);
+    await drawGraph(root);
 
-    toggleShowSubtasks.innerText = state.includeSubtasks
+    toggleShowSubtasks.innerText = State.includeSubtasks
       ? "Hide subtasks"
       : "Show subtasks";
     toggleShowSubtasks.disabled = null;
