@@ -1,5 +1,4 @@
 import { drawVisGraph } from "./visGraph";
-import { drawD3Graph } from "./d3Graph";
 import { getIssues } from "./queries";
 
 const RootId = "__sprintGraphRoot";
@@ -47,7 +46,6 @@ async function drawGraph() {
   document.body.appendChild(root);
 
   drawVisGraph(issueGraph, root);
-  // drawD3Graph(issueGraph, RootId);
 
   console.debug("Drew graph");
 }
