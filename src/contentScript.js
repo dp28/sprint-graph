@@ -2,6 +2,7 @@ import { buildGraph } from "./visGraph";
 import { getIssues } from "./queries";
 
 const RootId = "__sprintGraphRoot";
+const DiagramRootId = "__sprintDiagramRoot";
 const MessageElementId = "sprintMessage";
 
 function main() {
@@ -27,28 +28,59 @@ function registerListeners() {
   });
 }
 
-function toggleGraph() {
+async function toggleGraph() {
   const root = document.getElementById(RootId);
   if (root) {
     document.body.removeChild(root);
   } else {
     const root = createRoot();
-    drawGraph(root);
+    await drawGraph(root);
+    drawButtons(root);
   }
 }
 
-async function drawGraph(root) {
+async function drawGraph(root, { includeDoneIssues = true } = {}) {
   showMessage("Loading data ...", root);
-  const issueGraph = await getIssues();
+  const issueGraph = await getIssues({ includeDoneIssues });
   console.debug(issueGraph);
 
   showMessage("Building graph ...", root);
   const graph = buildGraph(issueGraph);
 
   hideMessage(root);
-  graph.draw(root);
+  const diagramRoot = createOrReplaceDiagramRoot(root);
+  graph.draw(diagramRoot);
 
   console.debug("Drew graph");
+}
+
+function drawButtons(root) {
+  let includeDoneIssues = true;
+  const toggleShowDoneIssues = document.createElement("button");
+  toggleShowDoneIssues.innerText = "Hide 'Done' issues";
+
+  toggleShowDoneIssues.addEventListener("click", async () => {
+    includeDoneIssues = !includeDoneIssues;
+    console.debug({ includeDoneIssues });
+
+    toggleShowDoneIssues.disabled = "disabled";
+    await drawGraph(root, { includeDoneIssues });
+
+    toggleShowDoneIssues.innerText = includeDoneIssues
+      ? "Hide 'Done' issues"
+      : "Show 'Done' issues";
+    toggleShowDoneIssues.disabled = null;
+  });
+
+  root.prepend(toggleShowDoneIssues);
+}
+
+function createOrReplaceDiagramRoot(root) {
+  let diagramRoot = root.querySelector(`#${DiagramRootId}`);
+  if (diagramRoot) {
+    root.removeChild(diagramRoot);
+  }
+  return createDiagramRoot(root);
 }
 
 function createRoot() {
@@ -60,11 +92,21 @@ function createRoot() {
   return root;
 }
 
+function createDiagramRoot(root) {
+  const diagramRoot = document.createElement("div");
+  diagramRoot.id = DiagramRootId;
+  diagramRoot.style =
+    "width: 100%; height: calc(100% - 50px); position: relative; border-top: 1px solid lightgray";
+  root.appendChild(diagramRoot);
+  return diagramRoot;
+}
+
 function showMessage(message, root) {
   let element = root.querySelector(`#${MessageElementId}`);
   if (!element) {
     element = document.createElement("p");
-    root.appendChild(element);
+    element.id = MessageElementId;
+    root.prepend(element);
   }
   element.innerText = message;
 }

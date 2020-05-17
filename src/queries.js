@@ -1,4 +1,4 @@
-export async function getIssues() {
+export async function getIssues({ includeDoneIssues }) {
   const projectKey = getProjectKey();
   console.debug({ projectKey });
 
@@ -8,7 +8,7 @@ export async function getIssues() {
   const { data } = await performQuery(query);
   console.debug(data);
   const issues = Object.values(data);
-  return mapIssuesToNetworkData(issues);
+  return mapIssuesToNetworkData({ issues, includeDoneIssues });
 }
 
 function getProjectKey() {
@@ -60,17 +60,25 @@ function findIssueKeysInPage(projectKey) {
   return [...new Set(document.body.innerHTML.match(regex))];
 }
 
-function mapIssuesToNetworkData(issues) {
+function mapIssuesToNetworkData({ issues, includeDoneIssues }) {
   const nodes = issues.map(toIssue);
   const edges = findEdges(issues);
-  return { nodes, edges };
+  if (includeDoneIssues) {
+    return { nodes, edges };
+  } else {
+    const unfinishedIssues = nodes.filter((_) => !isDone(_));
+    const unfinishedIssueKeys = new Set(unfinishedIssues.map((_) => _.key));
+    const unfinishedIssueEdges = edges.filter((edge) =>
+      unfinishedIssueKeys.has(edge.from)
+    );
+    return { nodes: unfinishedIssues, edges: unfinishedIssueEdges };
+  }
 }
 
-function toIssue({ id, key, fields }) {
+function toIssue({ key, fields }) {
   const summary = findField("summary", fields).content;
   const status = findField("status", fields).content;
   return {
-    id,
     key,
     status: { name: status.name, category: status.statusCategory.key },
     summary,
@@ -109,4 +117,8 @@ function findSubtaskEdges(issues) {
 
 function findField(name, fields) {
   return fields.find((_) => _.key === name);
+}
+
+function isDone(issue) {
+  return issue.status.category === "done";
 }
