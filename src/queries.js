@@ -89,7 +89,7 @@ function findBlockedEdges(issues) {
         link,
       }))
     )
-    .filter((_) => _.link.outwardIssue)
+    .filter((_) => _.link.outwardIssue && _.link.type.outward === "blocks")
     .map((issue) => ({
       from: issue.key,
       to: issue.link.outwardIssue.key,
