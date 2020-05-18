@@ -70,7 +70,7 @@ function mapIssuesToNetworkData({
   includeDoneIssues,
   includeSubtasks,
 }) {
-  const nodes = issues.map(toIssue);
+  const nodes = issues.filter(isNotEpic).map(toIssue);
   const edges = findEdges(issues);
   const graph = { nodes, edges };
 
@@ -151,4 +151,9 @@ function findField(name, fields) {
 
 function isDone(issue) {
   return issue.status.category === "done";
+}
+
+function isNotEpic(rawIssue) {
+  const issueType = findField("issuetype", rawIssue.fields).content;
+  return issueType.name.toLowerCase() !== "epic";
 }
