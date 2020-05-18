@@ -30,16 +30,13 @@ export function buildGraph(issueGraph, { showSummary }) {
   const options = {
     nodes: {
       shape: "box",
-      widthConstraint: {
-        minimum: 100,
-        maximum: 200,
-      },
+      widthConstraint: 100,
     },
     layout: {
       hierarchical: {
         enabled: true,
-        nodeSpacing: showSummary ? 200 : 100,
-        treeSpacing: 200,
+        nodeSpacing: 100,
+        treeSpacing: 100,
       },
     },
   };
