@@ -50,7 +50,7 @@ async function drawGraph(root) {
   console.debug(issueGraph);
 
   showMessage("Building graph ...", root);
-  const graph = buildGraph(issueGraph);
+  const graph = buildGraph(issueGraph, State);
 
   hideMessage(root);
   const diagramRoot = createOrReplaceDiagramRoot(root);
@@ -62,6 +62,7 @@ async function drawGraph(root) {
 function drawButtons(root) {
   drawDoneIssuesToggle(root);
   drawSubtasksToggle(root);
+  drawSummaryToggle(root);
 }
 
 function drawDoneIssuesToggle(root) {
@@ -104,6 +105,27 @@ function drawSubtasksToggle(root) {
   });
 
   root.prepend(toggleShowSubtasks);
+}
+
+function drawSummaryToggle(root) {
+  const toggleShowSummary = document.createElement("button");
+  toggleShowSummary.innerText = State.showSummary
+    ? "Hide summary"
+    : "Show summary";
+
+  toggleShowSummary.addEventListener("click", async () => {
+    State.showSummary = !State.showSummary;
+
+    toggleShowSummary.disabled = "disabled";
+    await drawGraph(root);
+
+    toggleShowSummary.innerText = State.showSummary
+      ? "Hide summary"
+      : "Show summary";
+    toggleShowSummary.disabled = null;
+  });
+
+  root.prepend(toggleShowSummary);
 }
 
 function createOrReplaceDiagramRoot(root) {

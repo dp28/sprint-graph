@@ -1,6 +1,6 @@
 import { DataSet, Network } from "vis-network/standalone";
 
-export function buildGraph(issueGraph) {
+export function buildGraph(issueGraph, { showSummary }) {
   const levels = calculateLevels(issueGraph);
   const nodeMap = Object.fromEntries(
     issueGraph.nodes.map((node) => [node.key, node])
@@ -10,8 +10,8 @@ export function buildGraph(issueGraph) {
       issueGraph.nodes.map(({ key, status, summary }, index) => ({
         level: levels[key],
         id: key,
-        label: key,
-        title: `[${status.name}] ${summary}`,
+        label: showSummary ? `[${key}] ${summary}` : `[${key}]`,
+        title: `(${status.name}) ${summary}`,
         color: getStatusColour(status.category),
       }))
     ),
@@ -30,11 +30,15 @@ export function buildGraph(issueGraph) {
   const options = {
     nodes: {
       shape: "box",
-      widthConstraint: 100,
+      widthConstraint: {
+        minimum: 100,
+        maximum: 200,
+      },
     },
     layout: {
       hierarchical: {
         enabled: true,
+        nodeSpacing: showSummary ? 200 : 100,
         treeSpacing: 200,
       },
     },
