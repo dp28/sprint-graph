@@ -16,14 +16,19 @@ function getProjectKey() {
   const pathMatch = url.match(/\/projects\/(\w+)\//);
   if (pathMatch) {
     return pathMatch[1];
-  } else {
-    const searchMatch = url.match(/projectKey=(\w+)/);
-    if (searchMatch) {
-      return searchMatch[1];
-    } else {
-      throw "Project key not found in URL";
-    }
   }
+
+  const searchMatch = url.match(/projectKey=(\w+)/);
+  if (searchMatch) {
+    return searchMatch[1];
+  }
+
+  const issueIdMatch = url.match(/([A-Z]+)-\d+/);
+  if (issueIdMatch) {
+    return issueIdMatch[1];
+  }
+
+  throw "Project key not found in URL";
 }
 
 async function performQuery(query) {
