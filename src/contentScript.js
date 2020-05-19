@@ -1,5 +1,5 @@
 import { buildGraph } from "./visGraph";
-import { getIssues } from "./queries";
+import { loadIssueGraph } from "./jira/loader";
 
 const RootId = "__sprintGraphRoot";
 const DiagramRootId = "__sprintDiagramRoot";
@@ -46,7 +46,7 @@ async function toggleGraph() {
 
 async function drawGraph(root) {
   showMessage("Loading data ...", root);
-  const issueGraph = await getIssues(State);
+  const issueGraph = await loadIssueGraph(State);
   console.debug(issueGraph);
 
   showMessage("Building graph ...", root);
