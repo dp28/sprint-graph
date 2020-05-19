@@ -1,5 +1,6 @@
 import { buildGraph } from "./visGraph";
 import { loadIssueGraph } from "./jira/loader";
+import { prependButton } from "./ui/buttons";
 
 const RootId = "__sprintGraphRoot";
 const DiagramRootId = "__sprintDiagramRoot";
@@ -8,6 +9,7 @@ const MessageElementId = "sprintMessage";
 const State = {
   includeDoneIssues: false,
   includeSubtasks: false,
+  showSummary: true,
 };
 
 function main() {
@@ -60,72 +62,29 @@ async function drawGraph(root) {
 }
 
 function drawButtons(root) {
-  drawDoneIssuesToggle(root);
-  drawSubtasksToggle(root);
-  drawSummaryToggle(root);
-}
+  const commonButtonParams = {
+    rootElement: root,
+    state: State,
+    onClick: async () => drawGraph(root),
+  };
 
-function drawDoneIssuesToggle(root) {
-  const toggleShowDoneIssues = document.createElement("button");
-  toggleShowDoneIssues.innerText = State.includeDoneIssues
-    ? "Hide 'Done' issues"
-    : "Show 'Done' issues";
-
-  toggleShowDoneIssues.addEventListener("click", async () => {
-    State.includeDoneIssues = !State.includeDoneIssues;
-
-    toggleShowDoneIssues.disabled = "disabled";
-    await drawGraph(root);
-
-    toggleShowDoneIssues.innerText = State.includeDoneIssues
-      ? "Hide 'Done' issues"
-      : "Show 'Done' issues";
-    toggleShowDoneIssues.disabled = null;
+  prependButton({
+    ...commonButtonParams,
+    label: { on: "Hide 'Done' issues", off: "Show 'Done' issues" },
+    attributeName: "includeDoneIssues",
   });
 
-  root.prepend(toggleShowDoneIssues);
-}
-
-function drawSubtasksToggle(root) {
-  const toggleShowSubtasks = document.createElement("button");
-  toggleShowSubtasks.innerText = State.includeSubtasks
-    ? "Hide subtasks"
-    : "Show subtasks";
-
-  toggleShowSubtasks.addEventListener("click", async () => {
-    State.includeSubtasks = !State.includeSubtasks;
-
-    toggleShowSubtasks.disabled = "disabled";
-    await drawGraph(root);
-
-    toggleShowSubtasks.innerText = State.includeSubtasks
-      ? "Hide subtasks"
-      : "Show subtasks";
-    toggleShowSubtasks.disabled = null;
+  prependButton({
+    ...commonButtonParams,
+    label: { on: "Hide subtasks", off: "Show subtasks" },
+    attributeName: "includeSubtasks",
   });
 
-  root.prepend(toggleShowSubtasks);
-}
-
-function drawSummaryToggle(root) {
-  const toggleShowSummary = document.createElement("button");
-  toggleShowSummary.innerText = State.showSummary
-    ? "Hide summary"
-    : "Show summary";
-
-  toggleShowSummary.addEventListener("click", async () => {
-    State.showSummary = !State.showSummary;
-
-    toggleShowSummary.disabled = "disabled";
-    await drawGraph(root);
-
-    toggleShowSummary.innerText = State.showSummary
-      ? "Hide summary"
-      : "Show summary";
-    toggleShowSummary.disabled = null;
+  prependButton({
+    ...commonButtonParams,
+    label: { on: "Hide summary", off: "Show summary" },
+    attributeName: "showSummary",
   });
-
-  root.prepend(toggleShowSummary);
 }
 
 function createOrReplaceDiagramRoot(root) {
