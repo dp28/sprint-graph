@@ -1,5 +1,6 @@
-import { buildGraph } from "./visGraph";
-import { loadIssueGraph } from "./jira/loader";
+import { buildGraphDrawer } from "./visGraph";
+import { loadIssuesOnPage } from "./jira/loader";
+import { buildGraph } from "./jira/issueGraph";
 import { prependButton } from "./ui/buttons";
 
 const RootId = "__sprintGraphRoot";
@@ -41,31 +42,32 @@ async function toggleGraph() {
     document.body.removeChild(root);
   } else {
     const root = createRoot();
-    await drawGraph(root);
-    drawButtons(root);
+    const issues = await loadIssuesOnPage();
+    await drawGraph(root, issues);
+    drawButtons(root, issues);
   }
 }
 
-async function drawGraph(root) {
+function drawGraph(root, issues) {
   showMessage("Loading data ...", root);
-  const issueGraph = await loadIssueGraph(State);
+  const issueGraph = buildGraph(issues, State);
   console.debug(issueGraph);
 
   showMessage("Building graph ...", root);
-  const graph = buildGraph(issueGraph, State);
+  const drawer = buildGraphDrawer(issueGraph, State);
 
   hideMessage(root);
   const diagramRoot = createOrReplaceDiagramRoot(root);
-  graph.draw(diagramRoot);
+  drawer.draw(diagramRoot);
 
   console.debug("Drew graph");
 }
 
-function drawButtons(root) {
+function drawButtons(root, issues) {
   const commonButtonParams = {
     rootElement: root,
     state: State,
-    onClick: async () => drawGraph(root),
+    onClick: () => drawGraph(root, issues),
   };
 
   prependButton({

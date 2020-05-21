@@ -1,6 +1,6 @@
 import { DataSet, Network } from "vis-network/standalone";
 
-export function buildGraph(issueGraph, { showSummary }) {
+export function buildGraphDrawer(issueGraph, { showSummary }) {
   const levels = calculateLevels(issueGraph);
   const nodeMap = Object.fromEntries(
     issueGraph.nodes.map((node) => [node.key, node])
