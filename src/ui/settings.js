@@ -1,6 +1,7 @@
 import { render } from "./render";
 import { renderCheckbox } from "./checkbox";
 import { Grey, getStatusColour, setStatusColour } from "./colours";
+import * as storage from "../storage";
 
 const SettingsId = "__sprintSettingsContainer";
 
@@ -8,20 +9,25 @@ export function renderSettings({ graph, settings, issues, root, onChange }) {
   const visibleIssues = graph.nodes;
   const allRawIssues = Object.values(issues);
 
+  const onAnyChange = () => {
+    storage.set("settings", settings);
+    onChange();
+  };
+
   const settingsElement = renderSettingsContainer(root);
   renderInfo({ visibleIssues, allRawIssues, parent: settingsElement });
   renderCheckboxes({
     issues,
     settings,
     root: settingsElement,
-    onChange,
+    onChange: onAnyChange,
   });
 
   renderStatusColours({
     parent: settingsElement,
     issues: visibleIssues,
     settings,
-    onChange,
+    onChange: onAnyChange,
   });
 }
 

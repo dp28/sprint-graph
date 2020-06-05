@@ -1,13 +1,16 @@
 import { loadIssuesOnPage } from "./jira/loader";
 import { togglePopup } from "./ui/popup";
+import * as storage from "./storage";
 
-const Settings = {
-  includeDoneIssues: false,
-  includeSubtasks: false,
-  includeEpics: false,
-  showSummary: true,
-  statusColours: {},
-};
+const Settings = storage.get("settings", {
+  defaultValue: {
+    includeDoneIssues: false,
+    includeSubtasks: false,
+    includeEpics: false,
+    showSummary: true,
+    statusColours: {},
+  },
+});
 
 function main() {
   if (window.__sprintGraphAlreadyLoaded) {
