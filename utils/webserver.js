@@ -26,6 +26,7 @@ var compiler = webpack(config);
 
 var server = new WebpackDevServer(compiler, {
   hot: true,
+  https: true,
   contentBase: path.join(__dirname, "../build"),
   sockPort: env.PORT,
   headers: {
