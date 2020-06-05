@@ -6,6 +6,7 @@ const Settings = {
   includeSubtasks: false,
   includeEpics: false,
   showSummary: true,
+  statusColours: {},
 };
 
 function main() {

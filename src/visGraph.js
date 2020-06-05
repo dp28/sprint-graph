@@ -1,8 +1,8 @@
 import { DataSet, Network } from "vis-network/standalone";
-import { Blue, Green, Grey, Red } from "./ui/colours";
+import { Blue, Green, Grey, Red, getStatusColour } from "./ui/colours";
 import { isComplete, isEpic } from "./jira/issues";
 
-export function buildGraphDrawer(issueGraph, { showSummary }) {
+export function buildGraphDrawer(issueGraph, settings) {
   const levels = calculateLevels(issueGraph);
   const nodeMap = Object.fromEntries(
     issueGraph.nodes.map((node) => [node.key, node])
@@ -12,11 +12,11 @@ export function buildGraphDrawer(issueGraph, { showSummary }) {
       issueGraph.nodes.map((issue) => ({
         level: levels[issue.key],
         id: issue.key,
-        label: showSummary
+        label: settings.showSummary
           ? `[${issue.key}] ${issue.summary}`
           : `[${issue.key}]`,
         title: `(${issue.status.name}) ${issue.summary}`,
-        color: getColour(issue),
+        color: getColour(issue, settings),
         borderWidth: isEpic(issue) ? 3 : 1,
       }))
     ),
@@ -98,24 +98,13 @@ function calculateLongestDistanceToRoot(nodeKey, incomingEdges, path = []) {
   );
 }
 
-const StatusColours = {
-  new: Grey.medium,
-  done: {
-    border: Green.dark,
-    background: Green.medium,
-  },
-  default: {
-    border: Blue.dark,
-    background: Blue.medium,
-  },
-};
-
-function getColour(issue) {
-  const colour = StatusColours[issue.status.category] || StatusColours.default;
-  if (!isEpic(issue)) {
-    return colour;
-  }
-  return { ...colour, border: Green.dark };
+function getColour(issue, settings) {
+  const colour = getStatusColour({
+    status: issue.status.name,
+    category: issue.status.category,
+    settings,
+  });
+  return isEpic(issue) ? { background: colour, border: Green.dark } : colour;
 }
 
 function getEdgeLabel(edgeType, fromNode) {

@@ -1,6 +1,6 @@
 import { render } from "./render";
 import { renderCheckbox } from "./checkbox";
-import { Grey } from "./colours";
+import { Grey, getStatusColour, setStatusColour } from "./colours";
 
 const SettingsId = "__sprintSettingsContainer";
 
@@ -14,6 +14,13 @@ export function renderSettings({ graph, settings, issues, root, onChange }) {
     issues,
     settings,
     root: settingsElement,
+    onChange,
+  });
+
+  renderStatusColours({
+    parent: settingsElement,
+    issues: visibleIssues,
+    settings,
     onChange,
   });
 }
@@ -91,5 +98,45 @@ function renderCheckboxes({ root, settings, onChange }) {
     ...commonButtonParams,
     label: `Include epics`,
     attributeName: "includeEpics",
+  });
+}
+
+function renderStatusColours({ parent, issues, settings, onChange }) {
+  const allStatuses = issues.map((_) => _.status);
+  const statusToCategory = Object.fromEntries(
+    allStatuses.map(({ name, category }) => [name, category])
+  );
+
+  render({
+    parent,
+    elementType: "h3",
+    innerText: "Statuses",
+  });
+
+  Object.entries(statusToCategory).forEach(([status, category]) => {
+    const label = render({
+      parent,
+      innerText: status,
+      elementType: "label",
+      styles: { display: "block", "margin-bottom": "10px" },
+    });
+
+    const colourInput = render({
+      parent: label,
+      elementType: "input",
+      styles: { float: "left", "margin-right": "5px" },
+    });
+
+    colourInput.type = "color";
+    colourInput.value = getStatusColour({ category, status, settings });
+
+    colourInput.addEventListener("change", async ({ target }) => {
+      const newColour = target.value;
+      setStatusColour({ status, colour: newColour, settings });
+
+      colourInput.disabled = "disabled";
+      await onChange();
+      colourInput.disabled = null;
+    });
   });
 }
