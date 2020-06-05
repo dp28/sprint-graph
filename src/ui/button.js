@@ -1,12 +1,17 @@
-export function prependButton({
-  rootElement,
+import { render } from "./render";
+
+export function renderButton({
+  parent,
   label: { on, off },
   state,
   attributeName,
   onClick,
 }) {
-  const button = document.createElement("button");
-  button.innerText = state[attributeName] ? on : off;
+  const button = render({
+    parent,
+    innerText: state[attributeName] ? on : off,
+    elementType: "button",
+  });
 
   button.addEventListener("click", async () => {
     state[attributeName] = !state[attributeName];
@@ -18,5 +23,5 @@ export function prependButton({
     button.disabled = null;
   });
 
-  rootElement.prepend(button);
+  return button;
 }
