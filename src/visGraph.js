@@ -1,4 +1,5 @@
 import { DataSet, Network } from "vis-network/standalone";
+import { Blue, Green, Grey } from "./ui/colours";
 
 export function buildGraphDrawer(issueGraph, { showSummary }) {
   const levels = calculateLevels(issueGraph);
@@ -77,14 +78,14 @@ function calculateLongestDistanceToRoot(nodeKey, incomingEdges, path = []) {
 }
 
 const StatusColours = {
-  new: "rgb(223, 225, 230)",
+  new: Grey.medium,
   done: {
-    border: "rgb(0, 135, 90)",
-    background: "rgb(160, 255, 223)",
+    border: Green.dark,
+    background: Green.medium,
   },
   default: {
-    border: "rgb(0, 82, 204)",
-    background: "rgb(178, 209, 255)",
+    border: Blue.dark,
+    background: Blue.medium,
   },
 };
 

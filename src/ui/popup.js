@@ -1,6 +1,7 @@
 import { render } from "./render";
 import { renderGraph } from "./graph";
 import { renderSettings } from "./settings";
+import { showMessage } from "./flashMessage";
 
 const PopupId = "__sprintGraphRoot";
 
@@ -10,6 +11,7 @@ export async function togglePopup({ loadIssues, settings, doc = document }) {
     document.body.removeChild(popup);
   } else {
     const popup = renderPopup();
+    showMessage("Loading data ...", popup);
     const issues = await loadIssues();
     renderSettings({ root: popup, issues, settings });
     renderGraph({ root: popup, issues, settings });

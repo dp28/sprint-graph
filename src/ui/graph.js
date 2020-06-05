@@ -6,7 +6,6 @@ import { buildGraphDrawer } from "../visGraph";
 const DiagramRootId = "__sprintDiagramRoot";
 
 export function renderGraph({ issues, settings, root }) {
-  showMessage("Loading data ...", root);
   const issueGraph = buildGraph(issues, settings);
   console.debug(issueGraph);
 
