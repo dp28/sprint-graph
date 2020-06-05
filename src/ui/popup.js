@@ -1,6 +1,6 @@
 import { render } from "./render";
 import { renderGraph } from "./graph";
-import { renderButton } from "./button";
+import { renderSettings } from "./settings";
 
 const PopupId = "__sprintGraphRoot";
 
@@ -11,8 +11,8 @@ export async function togglePopup({ loadIssues, settings, doc = document }) {
   } else {
     const popup = renderPopup();
     const issues = await loadIssues();
+    renderSettings({ root: popup, issues, settings });
     renderGraph({ root: popup, issues, settings });
-    renderButtons({ root: popup, issues, settings });
   }
 }
 
@@ -28,33 +28,8 @@ function renderPopup() {
       top: "10px",
       left: "10px",
       background: "white",
+      display: "flex",
       "z-index": 10000,
     },
-  });
-}
-
-function renderButtons({ root, issues, settings }) {
-  const commonButtonParams = {
-    parent: root,
-    state: settings,
-    onClick: () => renderGraph({ issues, settings, root }),
-  };
-
-  renderButton({
-    ...commonButtonParams,
-    label: { on: "Hide 'Done' issues", off: "Show 'Done' issues" },
-    attributeName: "includeDoneIssues",
-  });
-
-  renderButton({
-    ...commonButtonParams,
-    label: { on: "Hide subtasks", off: "Show subtasks" },
-    attributeName: "includeSubtasks",
-  });
-
-  renderButton({
-    ...commonButtonParams,
-    label: { on: "Hide summary", off: "Show summary" },
-    attributeName: "showSummary",
   });
 }

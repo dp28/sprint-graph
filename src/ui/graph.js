@@ -27,9 +27,9 @@ function renderDiagramRoot(root) {
     id: DiagramRootId,
     styles: {
       width: "100%",
-      height: "calc(100% - 50px)",
+      height: "100%",
       position: "relative",
-      "border-top": "1px solid lightgray",
+      "flex-grow": 1,
     },
   });
 }
