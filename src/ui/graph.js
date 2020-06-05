@@ -1,4 +1,4 @@
-import { render } from "./render";
+import { render, removeChild } from "./render";
 import { showMessage, hideMessage } from "./flashMessage";
 import { buildGraph } from "../jira/issueGraph";
 import { buildGraphDrawer } from "../visGraph";
@@ -21,7 +21,7 @@ export function renderGraph({ issues, settings, root }) {
 }
 
 function renderDiagramRoot(root) {
-  removeDiagramRoot(root);
+  removeChild(DiagramRootId, root);
   return render({
     parent: root,
     id: DiagramRootId,
@@ -33,11 +33,4 @@ function renderDiagramRoot(root) {
       "box-shadow": `-2px 0px 2px ${Grey.medium}`,
     },
   });
-}
-
-function removeDiagramRoot(root) {
-  const diagramRoot = root.querySelector(`#${DiagramRootId}`);
-  if (diagramRoot) {
-    root.removeChild(diagramRoot);
-  }
 }

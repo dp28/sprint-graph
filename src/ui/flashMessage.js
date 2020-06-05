@@ -1,4 +1,4 @@
-import { render } from "./render";
+import { render, removeChild } from "./render";
 import { Grey, Red } from "./colours";
 
 const FlashMessageElementId = "__flashMessage";
@@ -29,12 +29,5 @@ export function showErrorMessage(message, root) {
 }
 
 export function hideMessage(root) {
-  const messageElement = findFlashMessageElement(root);
-  if (messageElement) {
-    root.removeChild(messageElement);
-  }
-}
-
-function findFlashMessageElement(root) {
-  return root.querySelector(`#${FlashMessageElementId}`);
+  removeChild(FlashMessageElementId, root);
 }

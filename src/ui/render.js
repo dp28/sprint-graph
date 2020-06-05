@@ -1,3 +1,10 @@
+export function removeChild(id, parent) {
+  const child = parent.querySelector(`#${id}`);
+  if (child) {
+    parent.removeChild(child);
+  }
+}
+
 export function render({
   parent,
   styles = null,
