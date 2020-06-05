@@ -1,41 +1,32 @@
-import { not, isComplete, isSubtask } from "./issues";
+import { isComplete, isSubtask, isEpic } from "./issues";
 
-export function buildGraph(
-  issues,
-  { includeDoneIssues = false, includeSubtasks = false } = {}
-) {
-  const nodes = issues.filter(isNotEpic).map(toIssue);
+export function buildGraph(issues, settings = {}) {
+  const nodes = issues.map(toIssue);
   const edges = findEdges(issues);
   const graph = { nodes, edges };
 
-  return filterSubtasks(
-    filterDoneIssues(graph, includeDoneIssues),
-    includeSubtasks
-  );
+  const filter = buildFilter(settings);
+  return filterGraph(filter, graph);
 }
 
-function filterDoneIssues(graph, includeDoneIssues) {
-  if (includeDoneIssues) {
-    return graph;
-  }
-  const unfinishedIssues = graph.nodes.filter(not(isComplete));
-  const unfinishedIssueKeys = new Set(unfinishedIssues.map((_) => _.key));
-  const unfinishedIssueEdges = graph.edges.filter((edge) =>
-    unfinishedIssueKeys.has(edge.from)
-  );
-  return { nodes: unfinishedIssues, edges: unfinishedIssueEdges };
+function buildFilter({
+  includeDoneIssues = false,
+  includeSubtasks = false,
+  includeEpics = false,
+}) {
+  return (issue) =>
+    (includeDoneIssues || !isComplete(issue)) &&
+    (includeSubtasks || !isSubtask(issue)) &&
+    (includeEpics || !isEpic(issue));
 }
 
-function filterSubtasks(graph, includeSubtasks) {
-  if (includeSubtasks) {
-    return graph;
-  }
-  const parentIssues = graph.nodes.filter(not(isSubtask));
-  const parentIssueKeys = new Set(parentIssues.map((_) => _.key));
-  const parentIssueEdges = graph.edges.filter((edge) =>
-    parentIssueKeys.has(edge.to)
+function filterGraph(shouldKeepNode, graph) {
+  const nodesToKeep = graph.nodes.filter(shouldKeepNode);
+  const nodeKeysToKeep = new Set(nodesToKeep.map((_) => _.key));
+  const edgesToKeep = graph.edges.filter((edge) =>
+    nodeKeysToKeep.has(edge.from)
   );
-  return { nodes: parentIssues, edges: parentIssueEdges };
+  return { nodes: nodesToKeep, edges: edgesToKeep };
 }
 
 function toIssue({ key, fields }) {
@@ -46,11 +37,15 @@ function toIssue({ key, fields }) {
     status: { name: status.name, category: status.statusCategory.key },
     summary,
     subtask: findField("issuetype", fields).content.subtask,
+    type: findField("issuetype", fields).content.name.toLowerCase(),
   };
 }
 
 function findEdges(issues) {
-  return findBlockedEdges(issues).concat(findSubtaskEdges(issues));
+  return [findBlockedEdges, findSubtaskEdges, findEpicEdges].reduce(
+    (edges, findEdges) => edges.concat(findEdges(issues)),
+    []
+  );
 }
 
 function findBlockedEdges(issues) {
@@ -79,11 +74,21 @@ function findSubtaskEdges(issues) {
   );
 }
 
-function findField(name, fields) {
-  return fields.find((_) => _.key === name);
+function findEpicEdges(issues) {
+  return issues.flatMap((possibleEpic) => {
+    const subIssues = findField("epic-issues", possibleEpic.fields);
+    if (!subIssues) {
+      return [];
+    }
+
+    return subIssues.content.map((issue) => ({
+      to: issue.key,
+      from: possibleEpic.key,
+      type: "epic",
+    }));
+  });
 }
 
-function isNotEpic(rawIssue) {
-  const issueType = findField("issuetype", rawIssue.fields).content;
-  return issueType.name.toLowerCase() !== "epic";
+function findField(name, fields) {
+  return fields.find((_) => _.key === name);
 }

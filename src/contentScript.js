@@ -4,6 +4,7 @@ import { togglePopup } from "./ui/popup";
 const Settings = {
   includeDoneIssues: false,
   includeSubtasks: false,
+  includeEpics: false,
   showSummary: true,
 };
 

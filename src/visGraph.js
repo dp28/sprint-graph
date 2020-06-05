@@ -1,5 +1,6 @@
 import { DataSet, Network } from "vis-network/standalone";
-import { Blue, Green, Grey } from "./ui/colours";
+import { Blue, Green, Grey, Red } from "./ui/colours";
+import { isComplete, isEpic } from "./jira/issues";
 
 export function buildGraphDrawer(issueGraph, { showSummary }) {
   const levels = calculateLevels(issueGraph);
@@ -8,12 +9,15 @@ export function buildGraphDrawer(issueGraph, { showSummary }) {
   );
   const data = {
     nodes: new DataSet(
-      issueGraph.nodes.map(({ key, status, summary }, index) => ({
-        level: levels[key],
-        id: key,
-        label: showSummary ? `[${key}] ${summary}` : `[${key}]`,
-        title: `(${status.name}) ${summary}`,
-        color: getStatusColour(status.category),
+      issueGraph.nodes.map((issue) => ({
+        level: levels[issue.key],
+        id: issue.key,
+        label: showSummary
+          ? `[${issue.key}] ${issue.summary}`
+          : `[${issue.key}]`,
+        title: `(${issue.status.name}) ${issue.summary}`,
+        color: getColour(issue),
+        borderWidth: isEpic(issue) ? 3 : 1,
       }))
     ),
     edges: new DataSet(
@@ -21,7 +25,7 @@ export function buildGraphDrawer(issueGraph, { showSummary }) {
         from,
         to,
         label: getEdgeLabel(type, nodeMap[from]),
-        arrows: type === "child" ? "from" : "to",
+        arrows: getArrowDirection(type),
         color: getEdgeColour(type, nodeMap[from]),
         dashes: type !== "child",
       }))
@@ -45,7 +49,24 @@ export function buildGraphDrawer(issueGraph, { showSummary }) {
   return { draw: (root) => new Network(root, data, options) };
 }
 
-function calculateLevels({ nodes, edges }) {
+function calculateLevels(graph) {
+  const levels = calculateBaseLevels(graph);
+  const epics = graph.nodes.filter(isEpic);
+  if (!epics.length) {
+    return levels;
+  }
+
+  const lowestEpicLevel = Math.max(epics.map(({ key }) => levels[key]));
+  graph.nodes.forEach((issue) => {
+    if (!isEpic(issue)) {
+      levels[issue.key] += lowestEpicLevel + 1;
+    }
+  });
+
+  return levels;
+}
+
+function calculateBaseLevels({ nodes, edges }) {
   const incomingEdges = edges.reduce((incoming, edge) => {
     incoming[edge.to] = incoming[edge.to] || [];
     incoming[edge.to].push(edge.from);
@@ -89,22 +110,32 @@ const StatusColours = {
   },
 };
 
-function getStatusColour(statusCategory) {
-  return StatusColours[statusCategory] || StatusColours.default;
+function getColour(issue) {
+  const colour = StatusColours[issue.status.category] || StatusColours.default;
+  if (!isEpic(issue)) {
+    return colour;
+  }
+  return { ...colour, border: Green.dark };
 }
 
 function getEdgeLabel(edgeType, fromNode) {
-  if (edgeType === "blocks" && fromNode.status.category === "done") {
+  if (edgeType === "blocks" && isComplete(fromNode)) {
     return "was blocked by";
   }
   return edgeType;
 }
 
 function getEdgeColour(edgeType, fromNode) {
-  if (edgeType === "blocks" && fromNode.status.category !== "done") {
-    return "red";
+  if (edgeType === "blocks" && !isComplete(fromNode)) {
+    return Red.medium;
   } else if (edgeType === "child") {
-    return "rgb(0, 82, 204)";
+    return Blue.dark;
+  } else if (edgeType === "epic") {
+    return Green.dark;
   }
-  return "grey";
+  return Grey.dark;
+}
+
+function getArrowDirection(type) {
+  return ["child", "epic"].includes(type) ? "from" : "to";
 }

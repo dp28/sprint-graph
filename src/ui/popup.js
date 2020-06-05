@@ -25,6 +25,7 @@ async function renderPopup({ loadIssues, settings, doc }) {
 
   try {
     const issues = await loadIssues();
+    console.log(issues);
 
     function reRender() {
       showMessage("Calculating graph ...", popup);

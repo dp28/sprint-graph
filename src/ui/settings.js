@@ -86,4 +86,10 @@ function renderCheckboxes({ root, settings, onChange }) {
     label: `Include subtasks`,
     attributeName: "includeSubtasks",
   });
+
+  renderCheckbox({
+    ...commonButtonParams,
+    label: `Include epics`,
+    attributeName: "includeEpics",
+  });
 }
