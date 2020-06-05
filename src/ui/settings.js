@@ -1,13 +1,14 @@
 import { render } from "./render";
-import { renderButton } from "./button";
+import { renderCheckbox } from "./checkbox";
 import { renderGraph } from "./graph";
+import { Grey } from "./colours";
 
 const SettingsId = "__sprintSettingsContainer";
 
 export function renderSettings({ issues, settings, root }) {
   const settingsElement = renderSettingsContainer(root);
-  const onClick = () => renderGraph({ issues, settings, root });
-  renderButtons({ settings, onClick, root: settingsElement });
+  const onChange = () => renderGraph({ issues, settings, root });
+  renderCheckboxes({ settings, onChange, root: settingsElement });
 }
 
 function renderSettingsContainer(root) {
@@ -15,36 +16,38 @@ function renderSettingsContainer(root) {
     parent: root,
     id: SettingsId,
     styles: {
-      width: "100px",
+      width: "200px",
       height: "100%",
+      padding: "5px",
       position: "relative",
-      "background-color": "lightgray",
+      "border-right": `1px solid ${Grey.medium}`,
+      "background-color": Grey.light,
     },
   });
 }
 
-function renderButtons({ root, settings, onClick }) {
+function renderCheckboxes({ root, settings, onChange }) {
   const commonButtonParams = {
     parent: root,
     state: settings,
-    onClick,
+    onChange,
   };
 
-  renderButton({
+  renderCheckbox({
     ...commonButtonParams,
-    label: { on: "Hide 'Done' issues", off: "Show 'Done' issues" },
+    label: "Show issue summaries",
+    attributeName: "showSummary",
+  });
+
+  renderCheckbox({
+    ...commonButtonParams,
+    label: "Show completed issues",
     attributeName: "includeDoneIssues",
   });
 
-  renderButton({
+  renderCheckbox({
     ...commonButtonParams,
-    label: { on: "Hide subtasks", off: "Show subtasks" },
+    label: "Include subtasks",
     attributeName: "includeSubtasks",
-  });
-
-  renderButton({
-    ...commonButtonParams,
-    label: { on: "Hide summary", off: "Show summary" },
-    attributeName: "showSummary",
   });
 }
