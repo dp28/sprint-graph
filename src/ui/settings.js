@@ -35,20 +35,26 @@ function renderSettingsContainer(root) {
 }
 
 function renderInfo({ visibleIssues, allRawIssues, parent }) {
-  render({
-    parent,
-    elementType: "p",
-    innerText: `Loaded ${allRawIssues.length} issues`,
+  const renderText = ({ text, styles }) => {
+    render({ parent, elementType: "p", innerText: text, styles });
+  };
+
+  renderText({
+    text: `Found ${allRawIssues.length} issues on this page`,
+    styles: {
+      "margin-bottom": "20px",
+    },
+  });
+
+  renderText({
+    text: `Showing ${visibleIssues.length} issues`,
     styles: {
       "margin-bottom": "0px",
     },
   });
-  render({
-    parent,
-    elementType: "p",
-    innerText: `(${
-      allRawIssues.length - visibleIssues.length
-    } hidden by filters)`,
+
+  renderText({
+    text: `(${allRawIssues.length - visibleIssues.length} hidden by filters)`,
     styles: {
       "margin-top": "0px",
       "margin-bottom": "20px",
