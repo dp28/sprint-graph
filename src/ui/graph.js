@@ -2,6 +2,7 @@ import { render } from "./render";
 import { showMessage, hideMessage } from "./flashMessage";
 import { buildGraph } from "../jira/issueGraph";
 import { buildGraphDrawer } from "../visGraph";
+import { Grey } from "./colours";
 
 const DiagramRootId = "__sprintDiagramRoot";
 
@@ -29,6 +30,7 @@ function renderDiagramRoot(root) {
       height: "100%",
       position: "relative",
       "flex-grow": 1,
+      "box-shadow": `-2px 0px 2px ${Grey.medium}`,
     },
   });
 }

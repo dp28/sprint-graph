@@ -11,6 +11,7 @@ export function renderCheckbox({
     parent,
     innerText: label,
     elementType: "label",
+    styles: { display: "block" },
   });
 
   const checkbox = render({

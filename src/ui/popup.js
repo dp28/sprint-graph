@@ -2,6 +2,7 @@ import { render } from "./render";
 import { renderGraph } from "./graph";
 import { renderSettings } from "./settings";
 import { showMessage, showErrorMessage } from "./flashMessage";
+import { Grey } from "./colours";
 
 const PopupId = "__sprintGraphRoot";
 
@@ -29,19 +30,21 @@ async function renderPopup({ loadIssues, settings, doc }) {
 }
 
 function renderPopupRoot(doc) {
+  const margin = "10px";
   return render({
     parent: doc.body,
     id: PopupId,
     styles: {
-      width: "calc(100% - 20px)",
-      height: "calc(100% - 20px)",
-      border: "1px solid lightgray",
+      width: `calc(100% - 2 * ${margin})`,
+      height: `calc(100% - 2 * ${margin})`,
+      border: `1px solid ${Grey.medium}`,
       position: "absolute",
-      top: "10px",
-      left: "10px",
+      top: margin,
+      left: margin,
       background: "white",
       display: "flex",
       "z-index": 10000,
+      "box-shadow": `3px 3px 3px ${Grey.dark}`,
     },
   });
 }

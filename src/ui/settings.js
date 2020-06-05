@@ -12,13 +12,14 @@ export function renderSettings({ issues, settings, root }) {
 }
 
 function renderSettingsContainer(root) {
+  const padding = "10px";
   return render({
     parent: root,
     id: SettingsId,
     styles: {
-      width: "200px",
-      height: "100%",
-      padding: "5px",
+      width: "250px",
+      height: `calc(100% - 2 * ${padding})`,
+      padding,
       position: "relative",
       "border-right": `1px solid ${Grey.medium}`,
       "background-color": Grey.light,
