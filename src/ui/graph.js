@@ -1,17 +1,13 @@
 import { render, removeChild } from "./render";
 import { showMessage, hideMessage } from "./flashMessage";
-import { buildGraph } from "../jira/issueGraph";
 import { buildGraphDrawer } from "../visGraph";
 import { Grey } from "./colours";
 
 const DiagramRootId = "__sprintDiagramRoot";
 
-export function renderGraph({ issues, settings, root }) {
-  const issueGraph = buildGraph(issues, settings);
-  console.debug(issueGraph);
-
-  showMessage("Building graph ...", root);
-  const drawer = buildGraphDrawer(issueGraph, settings);
+export function renderGraph({ graph, settings, root }) {
+  showMessage("Drawing graph ...", root);
+  const drawer = buildGraphDrawer(graph, settings);
 
   hideMessage(root);
   const diagramRoot = renderDiagramRoot(root);

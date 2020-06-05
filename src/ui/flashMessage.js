@@ -4,7 +4,6 @@ import { Grey, Red } from "./colours";
 const FlashMessageElementId = "__flashMessage";
 
 export function showMessage(message, root, colour = Grey) {
-  hideMessage(root);
   render({
     parent: root,
     id: FlashMessageElementId,

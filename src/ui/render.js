@@ -12,7 +12,12 @@ export function render({
   innerText = null,
   elementType = "div",
   doc = document,
+  replace = true,
 }) {
+  if (replace && id) {
+    removeChild(id, parent);
+  }
+
   const element = doc.createElement(elementType);
 
   if (styles) {

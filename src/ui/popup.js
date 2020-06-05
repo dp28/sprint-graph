@@ -3,6 +3,7 @@ import { renderGraph } from "./graph";
 import { renderSettings } from "./settings";
 import { showMessage, showErrorMessage } from "./flashMessage";
 import { Grey } from "./colours";
+import { buildGraph } from "../jira/issueGraph";
 
 const PopupId = "__sprintGraphRoot";
 const PopupMargin = "10px";
@@ -24,11 +25,26 @@ async function renderPopup({ loadIssues, settings, doc }) {
 
   try {
     const issues = await loadIssues();
-    renderSettings({ root: popup, issues, settings });
-    renderGraph({ root: popup, issues, settings });
+
+    function reRender() {
+      showMessage("Calculating graph ...", popup);
+      const graph = buildGraph(issues, settings);
+      console.debug(graph);
+
+      renderSettings({
+        root: popup,
+        graph,
+        issues,
+        settings,
+        onChange: reRender,
+      });
+
+      renderGraph({ root: popup, graph, settings });
+    }
+    reRender();
   } catch (error) {
     console.error(error);
-    showErrorMessage("Failed to load any issues", popup);
+    showErrorMessage("Failed to load issues and draw graph", popup);
   }
 }
 

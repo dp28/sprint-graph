@@ -1,3 +1,5 @@
+import { not, isComplete, isSubtask } from "./issues";
+
 export function buildGraph(
   issues,
   { includeDoneIssues = false, includeSubtasks = false } = {}
@@ -16,7 +18,7 @@ function filterDoneIssues(graph, includeDoneIssues) {
   if (includeDoneIssues) {
     return graph;
   }
-  const unfinishedIssues = graph.nodes.filter((_) => !isDone(_));
+  const unfinishedIssues = graph.nodes.filter(not(isComplete));
   const unfinishedIssueKeys = new Set(unfinishedIssues.map((_) => _.key));
   const unfinishedIssueEdges = graph.edges.filter((edge) =>
     unfinishedIssueKeys.has(edge.from)
@@ -28,7 +30,7 @@ function filterSubtasks(graph, includeSubtasks) {
   if (includeSubtasks) {
     return graph;
   }
-  const parentIssues = graph.nodes.filter((_) => !_.subtask);
+  const parentIssues = graph.nodes.filter(not(isSubtask));
   const parentIssueKeys = new Set(parentIssues.map((_) => _.key));
   const parentIssueEdges = graph.edges.filter((edge) =>
     parentIssueKeys.has(edge.to)
@@ -79,10 +81,6 @@ function findSubtaskEdges(issues) {
 
 function findField(name, fields) {
   return fields.find((_) => _.key === name);
-}
-
-function isDone(issue) {
-  return issue.status.category === "done";
 }
 
 function isNotEpic(rawIssue) {

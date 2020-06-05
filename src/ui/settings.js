@@ -1,14 +1,21 @@
 import { render } from "./render";
 import { renderCheckbox } from "./checkbox";
-import { renderGraph } from "./graph";
 import { Grey } from "./colours";
 
 const SettingsId = "__sprintSettingsContainer";
 
-export function renderSettings({ issues, settings, root }) {
+export function renderSettings({ graph, settings, issues, root, onChange }) {
+  const visibleIssues = graph.nodes;
+  const allRawIssues = Object.values(issues);
+
   const settingsElement = renderSettingsContainer(root);
-  const onChange = () => renderGraph({ issues, settings, root });
-  renderCheckboxes({ settings, onChange, root: settingsElement });
+  renderInfo({ visibleIssues, allRawIssues, parent: settingsElement });
+  renderCheckboxes({
+    issues,
+    settings,
+    root: settingsElement,
+    onChange,
+  });
 }
 
 function renderSettingsContainer(root) {
@@ -23,6 +30,28 @@ function renderSettingsContainer(root) {
       position: "relative",
       "border-right": `1px solid ${Grey.medium}`,
       "background-color": Grey.light,
+    },
+  });
+}
+
+function renderInfo({ visibleIssues, allRawIssues, parent }) {
+  render({
+    parent,
+    elementType: "p",
+    innerText: `Loaded ${allRawIssues.length} issues`,
+    styles: {
+      "margin-bottom": "0px",
+    },
+  });
+  render({
+    parent,
+    elementType: "p",
+    innerText: `(${
+      allRawIssues.length - visibleIssues.length
+    } hidden by filters)`,
+    styles: {
+      "margin-top": "0px",
+      "margin-bottom": "20px",
     },
   });
 }
@@ -42,13 +71,13 @@ function renderCheckboxes({ root, settings, onChange }) {
 
   renderCheckbox({
     ...commonButtonParams,
-    label: "Show completed issues",
+    label: `Show completed issues`,
     attributeName: "includeDoneIssues",
   });
 
   renderCheckbox({
     ...commonButtonParams,
-    label: "Include subtasks",
+    label: `Include subtasks`,
     attributeName: "includeSubtasks",
   });
 }

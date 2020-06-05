@@ -1,4 +1,4 @@
-import { loadIssues } from "./issues";
+import { loadIssues } from "./issueQueries";
 import { findIssueKeys } from "./page";
 
 export async function loadIssuesOnPage() {
