@@ -14,6 +14,9 @@ start: node_modules
 test: node_modules
 	npx jest --watchAll
 
+deployable.zip: build
+	zip -r deployable.zip build/
+
 node_modules: package.json
 	npm install
 	touch node_modules
