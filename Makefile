@@ -9,7 +9,7 @@ build: node_modules
 	node ./utils/build.js
 
 start: node_modules
-	node ./utils/webserver.js
+	NODE_ENV=development node ./utils/webserver.js
 
 test: node_modules
 	npx jest --watchAll
