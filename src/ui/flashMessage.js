@@ -1,9 +1,9 @@
 import { render } from "./render";
-import { Grey } from "./colours";
+import { Grey, Red } from "./colours";
 
 const FlashMessageElementId = "__flashMessage";
 
-export function showMessage(message, root) {
+export function showMessage(message, root, colour = Grey) {
   hideMessage(root);
   render({
     parent: root,
@@ -15,13 +15,17 @@ export function showMessage(message, root) {
       left: "25%",
       width: "50%",
       padding: "10px",
-      background: Grey.light,
-      border: `1px solid ${Grey.medium}`,
+      background: colour.light,
+      border: `1px solid ${colour.medium}`,
       "text-align": "center",
       "border-radius": "10px",
-      "box-shadow": `3px 3px 3px ${Grey.medium}`,
+      "box-shadow": `3px 3px 3px ${Grey.dark}`,
     },
   });
+}
+
+export function showErrorMessage(message, root) {
+  showMessage(message, root, Red);
 }
 
 export function hideMessage(root) {

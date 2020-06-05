@@ -1,7 +1,7 @@
 import { render } from "./render";
 import { renderGraph } from "./graph";
 import { renderSettings } from "./settings";
-import { showMessage } from "./flashMessage";
+import { showMessage, showErrorMessage } from "./flashMessage";
 
 const PopupId = "__sprintGraphRoot";
 
@@ -10,17 +10,27 @@ export async function togglePopup({ loadIssues, settings, doc = document }) {
   if (popup) {
     document.body.removeChild(popup);
   } else {
-    const popup = renderPopup();
-    showMessage("Loading data ...", popup);
-    const issues = await loadIssues();
-    renderSettings({ root: popup, issues, settings });
-    renderGraph({ root: popup, issues, settings });
+    await renderPopup({ loadIssues, settings, doc });
   }
 }
 
-function renderPopup() {
+async function renderPopup({ loadIssues, settings, doc }) {
+  const popup = renderPopupRoot(doc);
+  showMessage("Loading data ...", popup);
+
+  try {
+    const issues = await loadIssues();
+    renderSettings({ root: popup, issues, settings });
+    renderGraph({ root: popup, issues, settings });
+  } catch (error) {
+    console.error(error);
+    showErrorMessage("Failed to load any issues", popup);
+  }
+}
+
+function renderPopupRoot(doc) {
   return render({
-    parent: document.body,
+    parent: doc.body,
     id: PopupId,
     styles: {
       width: "calc(100% - 20px)",
