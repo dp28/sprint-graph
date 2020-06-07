@@ -7,6 +7,7 @@ clean:
 
 build: node_modules
 	node ./utils/build.js
+	rsync -r docs/icons build
 
 start: node_modules
 	NODE_ENV=development node ./utils/webserver.js
