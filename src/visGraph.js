@@ -110,7 +110,7 @@ function getColour(issue, settings) {
 
 function getEdgeLabel(edgeType, fromNode) {
   if (edgeType === "blocks" && isComplete(fromNode)) {
-    return "was blocked by";
+    return "blocked";
   }
   return edgeType;
 }
