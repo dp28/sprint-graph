@@ -7,6 +7,7 @@ export function buildGraphDrawer(issueGraph, settings) {
   const nodeMap = Object.fromEntries(
     issueGraph.nodes.map((node) => [node.key, node])
   );
+  const edges = removeUselessEdges(issueGraph.edges, nodeMap);
   const data = {
     nodes: new DataSet(
       issueGraph.nodes.map((issue) => ({
@@ -21,7 +22,7 @@ export function buildGraphDrawer(issueGraph, settings) {
       }))
     ),
     edges: new DataSet(
-      issueGraph.edges.map(({ from, to, type }) => ({
+      edges.map(({ from, to, type }) => ({
         from,
         to,
         label: getEdgeLabel(type, nodeMap[from]),
@@ -127,4 +128,8 @@ function getEdgeColour(edgeType, fromNode) {
 
 function getArrowDirection(type) {
   return ["child", "epic"].includes(type) ? "from" : "to";
+}
+
+function removeUselessEdges(edges, nodeMap) {
+  return edges.filter((edge) => nodeMap[edge.to] && nodeMap[edge.from]);
 }
