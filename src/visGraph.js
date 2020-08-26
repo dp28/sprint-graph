@@ -57,7 +57,7 @@ function calculateLevels(graph) {
     return levels;
   }
 
-  const lowestEpicLevel = Math.max(epics.map(({ key }) => levels[key]));
+  const lowestEpicLevel = Math.max(...epics.map(({ key }) => levels[key]));
   graph.nodes.forEach((issue) => {
     if (!isEpic(issue)) {
       levels[issue.key] += lowestEpicLevel + 1;
