@@ -30,5 +30,5 @@ function buildIssueQuery(key) {
 }
 
 function combineQueryParts(parts) {
-  return `query { ${parts.join("\n\n")} }`;
+  return `query loadIssues { ${parts.join("\n\n")} }`;
 }
