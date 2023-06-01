@@ -66,11 +66,13 @@ function findBlockedEdges(issues) {
 
 function findSubtaskEdges(issues) {
   return issues.flatMap((issue) =>
-    findField("subtasks", issue.fields).content.map((subtask) => ({
-      from: issue.key,
-      to: subtask.key,
-      type: "child",
-    }))
+    findOptionalArray("subtasks", issue.fields)
+      .concat(findOptionalArray("children-issues", issue.fields))
+      .map((subtask) => ({
+        from: issue.key,
+        to: subtask.key,
+        type: "child",
+      }))
   );
 }
 
@@ -87,6 +89,10 @@ function findEpicEdges(issues) {
       type: "epic",
     }));
   });
+}
+
+function findOptionalArray(name, fields) {
+  return (findField(name, fields) || {}).content || []
 }
 
 function findField(name, fields) {
