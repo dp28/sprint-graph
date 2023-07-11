@@ -1,4 +1,4 @@
-import { render } from "./render";
+import { render } from "./render.js";
 
 export function renderButton({
   parent,

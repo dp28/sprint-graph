@@ -1,6 +1,6 @@
-import { DataSet, Network } from "vis-network/standalone";
-import { Blue, Green, Grey, Red, getStatusColour } from "./ui/colours";
-import { isComplete, isEpic } from "./jira/issues";
+import { DataSet, Network } from "./lib/vis-network.js";
+import { Blue, Green, Grey, Red, getStatusColour } from "./ui/colours.js";
+import { isComplete, isEpic } from "./jira/issues.js";
 
 export function buildGraphDrawer(issueGraph, settings) {
   const levels = calculateLevels(issueGraph);

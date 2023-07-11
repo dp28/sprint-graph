@@ -1,9 +1,9 @@
-import { render, removeChild } from "./render";
-import { renderGraph } from "./graph";
-import { renderSettings } from "./settings";
-import { showMessage, showErrorMessage } from "./flashMessage";
-import { Grey } from "./colours";
-import { buildGraph } from "../jira/issueGraph";
+import { render, removeChild } from "./render.js";
+import { renderGraph } from "./graph.js";
+import { renderSettings } from "./settings.js";
+import { showMessage, showErrorMessage } from "./flashMessage.js";
+import { Grey } from "./colours.js";
+import { buildGraph } from "../jira/issueGraph.js";
 
 const PopupId = "__sprintGraphRoot";
 const PopupMargin = "10px";
@@ -25,7 +25,6 @@ async function renderPopup({ loadIssues, settings, doc }) {
 
   try {
     const issues = await loadIssues();
-    console.log(issues);
 
     function reRender() {
       showMessage("Calculating graph ...", popup);

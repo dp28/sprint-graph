@@ -1,24 +1,33 @@
 {
   "name": "Sprint Graph",
-  "version": "0.1.2",
-  "manifest_version": 2,
+  "version": "1.0.0",
+  "manifest_version": 3,
   "description": "Visualize Jira Sprints as graphs",
   "background": {
-    "scripts": [
-      "backgroundScript.bundle.js"
-    ]
+    "service_worker": "backgroundScript.js"
   },
   "permissions": [
+    "scripting",
     "tabs",
     "activeTab"
   ],
-  "browser_action": {
+  "action": {
     "default_title": "Sprint Graph"
   },
   "web_accessible_resources": [
-    "*"
+    {
+      "resources": [
+        "icons/*",
+        "*.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
   "icons": {
     "16": "icons/16.png",
     "48": "icons/48.png",

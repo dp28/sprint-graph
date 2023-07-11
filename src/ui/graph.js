@@ -1,7 +1,7 @@
-import { render, removeChild } from "./render";
-import { showMessage, hideMessage } from "./flashMessage";
-import { buildGraphDrawer } from "../visGraph";
-import { Grey } from "./colours";
+import { render, removeChild } from "./render.js";
+import { showMessage, hideMessage } from "./flashMessage.js";
+import { buildGraphDrawer } from "../visGraph.js";
+import { Grey } from "./colours.js";
 
 const DiagramRootId = "__sprintDiagramRoot";
 

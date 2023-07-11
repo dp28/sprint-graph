@@ -40,8 +40,7 @@ To install this locally:
 ## Development
 
 1. Follow the instructions above for loading the unpacked extension.
-2. Run `make start` to run a development server that will automatically
-   recompile after any file change and reload the extension and browser page.
+2. Use a chrome extension to reload this chrome extension after any change
 
 ## License
 

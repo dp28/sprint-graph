@@ -1,5 +1,5 @@
-import { render, removeChild } from "./render";
-import { Grey, Red } from "./colours";
+import { render, removeChild } from "./render.js";
+import { Grey, Red } from "./colours.js";
 
 const FlashMessageElementId = "__flashMessage";
 

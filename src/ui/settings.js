@@ -1,7 +1,7 @@
-import { render } from "./render";
-import { renderCheckbox } from "./checkbox";
-import { Grey, getStatusColour, setStatusColour } from "./colours";
-import * as storage from "../storage";
+import { render } from "./render.js";
+import { renderCheckbox } from "./checkbox.js";
+import { Grey, getStatusColour, setStatusColour } from "./colours.js";
+import * as storage from "../storage.js";
 
 const SettingsId = "__sprintSettingsContainer";
 

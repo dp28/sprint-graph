@@ -1,4 +1,4 @@
-import { isComplete, isSubtask, isEpic } from "./issues";
+import { isComplete, isSubtask, isEpic } from "./issues.js";
 
 export function buildGraph(issues, settings = {}) {
   const nodes = issues.map(toIssue);
